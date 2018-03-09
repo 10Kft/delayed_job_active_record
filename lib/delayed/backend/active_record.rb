@@ -73,15 +73,15 @@ module Delayed
 
         def self.reserve(worker, max_run_time = Worker.max_run_time)
           # Suppress logs in ActiveRecord when waiting for job.
-          tmp_log_level = ::ActiveRecord::Base.log_level
-          ::ActiveRecord::Base.log_level = :FATAL
+          tmp_log_level = ::ActiveRecord::Base.logger.level
+          ::ActiveRecord::Base.logger.level = 5
           ready_scope =
             ready_to_run(worker.name, max_run_time)
             .min_priority
             .max_priority
             .for_queues
             .by_priority
-          ::ActiveRecord::Base.log_level = tmp_log_level
+          ::ActiveRecord::Base.logger.level = tmp_log_level
 
           reserve_with_scope(ready_scope, worker, db_time_now)
         end
